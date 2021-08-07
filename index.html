@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Two</title>
+    <!-- Sprite Background(real not used in this game): https://cdn.gamedevmarket.net/wp-content/uploads/20191203145553/d874367282cec41be1ac5d8000899d2a-700x389.png -->
+    <!-- Characters from: http://untamed.wild-refuge.net/rmxpresources.php?characters -->
+    <!-- Jump Sound: https://soundbible.com/grab.php?id=1343&type=mp3 -->
+    <!-- Celebrate sound: https://soundbible.com/grab.php?id=1512&type=mp3 -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        .font{
+            font-family: 'Press Start 2P', cursive;
+        }
+        *{margin:0;}
+        body{
+            background-color: black;
+        }
+        #score{
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .tp{
+            text-align: center;
+            color: white;
+        }
+        #game{
+            width:800px;
+            height:400px;
+            margin:auto;
+            background-image: url(assets/background.png);
+            background-size: contain;
+        }
+        .player{
+            width: 32px;
+            height: 48px;
+            overflow: hidden;
+            position:relative;
+        }
+        #player1{
+            top:276px;
+            left:60px;
+        }
+        #player1 img{
+            position: relative;
+            top:-96px;
+        }
+        #player2{
+            top:228px;
+            left:760px;
+        }
+        #player2 img{
+            position: relative;
+            top:-48px;
+        }
+
+        .walk{
+            animation: walking .5s steps(4) infinite;
+        }
+        @keyframes walking{
+            0%{transform: translate3d(0,0,0);}
+            100%{transform: translate3d(-100%,0,0);}
+        }
+
+        .jump{
+            animation: jumping .5s;
+        }
+        @keyframes jumping {
+            0%{top:276px;}
+            50%{top:176px;}
+            100%{top:276px;}
+        }
+
+        .attack{
+            animation: attacking 1s linear infinite;
+        }
+        @keyframes attacking {
+            0%{left:760px;}
+            100%{left:0;}
+        }
+
+        .dead{
+            transform-origin: bottom left;
+            animation: dying .5s forwards;
+        }
+        @keyframes dying {
+            0%{transform: rotate(0deg);}
+            100%{transform: rotate(-90deg);}
+        }
+
+    </style>
+</head>
+<body>
+    <div id="score "class="font tp">
+        Press SPACEBAR to start! Hey! Save Iron Man! Thor wants to kill him, if you Save Iron Man you saved the world because Avengers don't know the technique for Time Travel; Iron man has also a wound!
+    </div>
+    <div id="game">
+        <div id="player1" class="player">
+            <img src="assets/ironman.png">
+        </div>
+        <div id="player2" class="player">
+            <img src="assets/thor.png">
+        </div>
+    </div>
+    <script>
+        player1 = document.getElementById("player1");
+        player2 = document.getElementById("player2");
+        score = document.getElementById("score");
+
+        var gameOver = false;
+        var distance = 0;
+
+        document.addEventListener("keypress", function(event){
+            if(!player1.classList.contains("jump")){
+                player1.classList.add("jump");
+                setTimeout(
+                    function(){
+                        player1.classList.remove("jump");
+                    },
+                    500
+                );
+            }
+
+            player1.children[0].classList.add("walk");
+            player1.classList.remove("dead");
+            player2.children[0].classList.add("walk");
+            player2.classList.add("attack");
+
+            setInterval(() => {
+                player1Top = parseInt(window.getComputedStyle(player1).getPropertyValue("top"));
+                player2Left = parseInt(window.getComputedStyle(player2).getPropertyValue("left"));
+
+                if(player2Left >= 60 && player2Left <= 72 && player1Top >= 228){
+                    player1.children[0].classList.remove("walk");
+                    player1.classList.add("dead");
+                    player2.children[0].classList.remove("walk");
+                    player2.classList.remove("attack");
+                    player2.style.left = player2Left + "px";
+
+                    gameOver = true;
+                    distance = 0;
+
+                } else{
+                    distance++;
+                    score.innerHTML = "Score: "+ parseInt(distance/100);
+                }
+
+            }, 10);
+        });
+
+    </script>
+</body>
+</html>
